@@ -12,11 +12,11 @@ export default class LevelSetup extends Component{
     }
 
     LoadScene(){
-        
+
         this.mesh.traverse( ( node ) => {
             if ( node.isMesh || node.isLight ) { node.castShadow = true; }
-            if(node.isMesh){ 
-                node.receiveShadow = true; 
+            if(node.isMesh){
+                node.receiveShadow = true;
                 //node.material.wireframe = true;
                 this.SetStaticCollider(node);
             }
@@ -45,8 +45,8 @@ export default class LevelSetup extends Component{
     }
 
 
-    SetStaticCollider(mesh){
-        const shape = createConvexHullShape(mesh);
+    SetStaticCollider(mesh, useFullShape){
+        const shape = useFullShape ? mesh : createConvexHullShape(mesh);
         const mass = 0;
         const transform = new Ammo.btTransform();
         transform.setIdentity();
@@ -57,7 +57,7 @@ export default class LevelSetup extends Component{
         const object = new Ammo.btRigidBody(rbInfo);
         object.parentEntity = this.parent;
         object.mesh = mesh;
-  
+
         this.physicsWorld.addRigidBody(object);
     }
 
