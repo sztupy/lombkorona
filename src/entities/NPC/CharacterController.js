@@ -87,7 +87,7 @@ export default class CharacterController extends Component{
         this.SetupAnimations();
 
         this.scene.add(scene);
-        this.stateMachine.SetState('chase');
+        this.stateMachine.SetState('idle');
     }
 
     UpdateDirection(){
@@ -238,6 +238,7 @@ export default class CharacterController extends Component{
 
             vel.applyQuaternion(this.model.quaternion);
 
+            // when the walk/run animation wraps around the vector would be a large jump (back). Make sure we don't move the character for these large jump events
             if(vel.lengthSq() < 1 * 1){
                 this.model.position.add(vel);
             }
