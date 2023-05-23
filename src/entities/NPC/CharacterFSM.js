@@ -60,6 +60,7 @@ class IdleState extends State{
 class PatrolState extends State{
     constructor(parent){
         super(parent);
+        this.chaseDelay = 1.0;
     }
 
     get Name(){return 'patrol'}
@@ -71,6 +72,7 @@ class PatrolState extends State{
 
     Enter(prevState){
         this.parent.proxy.canMove = true;
+        this.chaseDelay = 1.0;
         const action = this.Animation.action;
 
         if(prevState){
@@ -85,9 +87,12 @@ class PatrolState extends State{
     }
 
     Update(t){
-        if(this.parent.proxy.CanSeeThePlayer()){
-            this.parent.SetState('chase');
-        }else if(this.parent.proxy.path && this.parent.proxy.path.length == 0){
+        if (this.parent.proxy.CanSeeThePlayer()){
+            this.chaseDelay -= t;
+            if (this.chaseDelay <= 0.0) {
+                this.parent.SetState('chase');
+            }
+        }else if (this.parent.proxy.path && this.parent.proxy.path.length == 0){
             this.parent.SetState('idle');
         }
     }
@@ -101,6 +106,7 @@ class ChaseState extends State{
         this.attackDistance = 2.0;
         this.shouldRotate = false;
         this.switchDelay = 0.2;
+        this.speed = 1.5 + Math.random() * 0.5;
     }
 
     get Name(){return 'chase'}
@@ -120,7 +126,7 @@ class ChaseState extends State{
             action.crossFadeFrom(prevState.Animation.action, 0.2, true);
         }
 
-        action.timeScale = 1.5;
+        action.timeScale = this.speed;
         action.play();
     }
 
@@ -132,6 +138,10 @@ class ChaseState extends State{
         if(this.updateTimer <= 0.0){
             this.parent.proxy.NavigateToPlayer();
             this.updateTimer += this.updateFrequency;
+        }
+
+        if (!this.parent.proxy.path) {
+            this.parent.SetState('patrol');
         }
 
         if(this.parent.proxy.IsCloseToPlayer){

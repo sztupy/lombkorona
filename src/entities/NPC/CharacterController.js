@@ -33,6 +33,8 @@ export default class CharacterController extends Component{
 
         this.canMove = true;
         this.health = Math.random() * 100;
+        this.size = 0.009 + Math.random() * 0.004;
+        this.speed = 1 + Math.random() * 0.75;
     }
 
     SetAnim(name, clip){
@@ -63,7 +65,7 @@ export default class CharacterController extends Component{
 
         const scene = this.model;
 
-        scene.scale.setScalar(0.009 + Math.random() * 0.004);
+        scene.scale.setScalar(this.size);
         scene.position.copy(this.parent.position);
 
         this.mixer = new THREE.AnimationMixer( scene );
@@ -85,7 +87,7 @@ export default class CharacterController extends Component{
         this.SetupAnimations();
 
         this.scene.add(scene);
-        this.stateMachine.SetState('idle');
+        this.stateMachine.SetState('chase');
     }
 
     UpdateDirection(){
@@ -229,14 +231,14 @@ export default class CharacterController extends Component{
     }
 
     ApplyRootMotion(){
-        if(this.canMove){
+        if(this.canMove) {
             const vel = this.rootBone.position.clone();
-            vel.sub(this.lastPos).multiplyScalar(0.01);
+            vel.sub(this.lastPos).multiplyScalar(0.01 * this.speed);
             vel.y = 0;
 
             vel.applyQuaternion(this.model.quaternion);
 
-            if(vel.lengthSq() < 0.1 * 0.1){
+            if(vel.lengthSq() < 1 * 1){
                 this.model.position.add(vel);
             }
         }
