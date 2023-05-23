@@ -28,7 +28,7 @@ export default class CharacterController extends Component{
         this.attackDistance = 2.2;
 
         this.canMove = true;
-        this.health = 100;
+        this.health = Math.random() * 100;
     }
 
     SetAnim(name, clip){
@@ -41,6 +41,7 @@ export default class CharacterController extends Component{
     }
 
     Initialize(){
+        this.uimanager = this.FindEntity("UIManager").GetComponent("UIManager");
         this.stateMachine = new CharacterFSM(this);
         this.navmesh = this.FindEntity('Level').GetComponent('Navmesh');
         this.hitbox = this.GetComponent('AttackTrigger');
@@ -52,7 +53,7 @@ export default class CharacterController extends Component{
 
         scene.scale.setScalar(0.01);
         scene.position.copy(this.parent.position);
-        
+
         this.mixer = new THREE.AnimationMixer( scene );
 
         scene.traverse(child => {
@@ -99,7 +100,7 @@ export default class CharacterController extends Component{
 
         const rayInfo = {};
         const collisionMask = CollisionFilterGroups.AllFilter & ~CollisionFilterGroups.SensorTrigger;
-        
+
         if(AmmoHelper.CastRay(this.physicsWorld, modelPos, this.player.Position, rayInfo, collisionMask)){
             const body = Ammo.castObject( rayInfo.collisionObject, Ammo.btRigidBody );
 
@@ -129,6 +130,15 @@ export default class CharacterController extends Component{
             }
         }
         */
+    }
+
+    RespawnCreature() {
+        this.model.position.x = Math.random() * 100 - 50;
+        this.model.position.z = Math.random() * 100 - 50;
+        this.ClearPath();
+        this.health = Math.random() * 100;
+
+        this.uimanager.AddKill();
     }
 
     FacePlayer(t, rate = 3.0){
@@ -176,7 +186,7 @@ export default class CharacterController extends Component{
 
         const target = this.path[0].clone().sub( this.model.position );
         target.y = 0.0;
-       
+
         if (target.lengthSq() > 0.1 * 0.1) {
             target.normalize();
             this.tempRot.setFromUnitVectors(this.forwardVec, target);
@@ -223,6 +233,10 @@ export default class CharacterController extends Component{
         this.UpdateDirection();
         this.MoveAlongPath(t);
         this.stateMachine.Update(t);
+
+        if (Math.abs(this.model.position.x) > 84 || Math.abs(this.model.position.z) > 84) {
+            this.RespawnCreature();
+        }
 
         this.parent.SetRotation(this.model.quaternion);
         this.parent.SetPosition(this.model.position);

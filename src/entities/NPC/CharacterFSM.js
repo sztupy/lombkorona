@@ -110,7 +110,7 @@ class ChaseState extends State{
         this.parent.proxy.canMove = true;
         const action = this.Animation.action;
         this.updateTimer = 0.0;
-        
+
         if(prevState){
             action.time = 0.0;
             action.enabled = true;
@@ -198,6 +198,7 @@ class AttackState extends State{
 class DeadState extends State{
     constructor(parent){
         super(parent);
+        this.updateTimer = 10;
     }
 
     get Name(){return 'dead'}
@@ -211,11 +212,21 @@ class DeadState extends State{
         if(prevState){
             action.time = 0.0;
             action.enabled = true;
+            action.paused = false;
             action.crossFadeFrom(prevState.Animation.action, 0.1, true);
+            this.updateTimer = 10;
         }
 
         action.play();
     }
 
-    Update(t){}
+    Update(t){
+        this.updateTimer -= t;
+
+        if (this.updateTimer<0) {
+            this.parent.SetState('idle');
+            this.parent.proxy.RespawnCreature();
+            this.updateTimer = 10;
+        }
+    }
 }

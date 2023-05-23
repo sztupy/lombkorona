@@ -25,6 +25,7 @@ export default class Weapon extends Component{
         this.magAmmo = 30;
         this.ammoPerMag = 30;
         this.ammo = 100;
+        this.maxAmmo = 200;
         this.damage = 2;
         this.uimanager = null;
         this.reloading = false;
@@ -61,6 +62,7 @@ export default class Weapon extends Component{
 
     AmmoPickup = (e) => {
         this.ammo += 30;
+        this.ammo = Math.min(this.maxAmmo, this.ammo);
         this.uimanager.SetAmmo(this.magAmmo, this.ammo);
     }
 
@@ -147,12 +149,12 @@ export default class Weapon extends Component{
         end.unproject(this.camera);
 
         const collisionMask = CollisionFilterGroups.AllFilter & ~CollisionFilterGroups.SensorTrigger;
-        
+
         if(AmmoHelper.CastRay(this.world, start, end, this.hitResult, collisionMask)){
             const ghostBody = Ammo.castObject( this.hitResult.collisionObject, Ammo.btPairCachingGhostObject );
-            const rigidBody = Ammo.castObject( this.hitResult.collisionObject, Ammo.btRigidBody ); 
+            const rigidBody = Ammo.castObject( this.hitResult.collisionObject, Ammo.btRigidBody );
             const entity = ghostBody.parentEntity || rigidBody.parentEntity;
-            
+
             entity && entity.Broadcast({'topic': 'hit', from: this.parent, amount: this.damage, hitResult: this.hitResult});
         }
     }
@@ -180,7 +182,7 @@ export default class Weapon extends Component{
 
             this.Raycast();
             this.Broadcast({topic: 'ak47_shot'});
-            
+
             this.shotSound.isPlaying && this.shotSound.stop();
             this.shotSound.play();
         }

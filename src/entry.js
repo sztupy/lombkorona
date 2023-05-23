@@ -1,10 +1,10 @@
 /**
  * entry.js
- * 
- * This is the first file loaded. It sets up the Renderer, 
- * Scene, Physics and Entities. It also starts the render loop and 
+ *
+ * This is the first file loaded. It sets up the Renderer,
+ * Scene, Physics and Entities. It also starts the render loop and
  * handles window resizes.
- * 
+ *
  */
 
 import * as THREE from 'three'
@@ -15,6 +15,7 @@ import Sky from './entities/Sky/Sky2'
 import LevelSetup from './entities/Level/LevelSetup'
 import PlayerControls from './entities/Player/PlayerControls'
 import PlayerPhysics from './entities/Player/PlayerPhysics'
+import PlayerRespawn from './entities/Player/PlayerRespawn'
 import Stats from 'three/examples/jsm/libs/stats.module'
 import {  FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import {  GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -138,7 +139,7 @@ class FPSGameApp{
     let d = 0;
     progress_cb(0);
     for (const p of proms) {
-      p.then(()=> {    
+      p.then(()=> {
         d++;
         progress_cb( (d / proms.length) * 100 );
       });
@@ -162,8 +163,11 @@ class FPSGameApp{
   }
 
   SetupStartButton(){
-    document.getElementById('start_game').addEventListener('click', this.StartGame);
+    for (let i=0; i<6; i++) {
+      document.getElementById('start_game_'+i).addEventListener('click', () => this.StartGame(i));
+    }
   }
+
 
   ShowMenu(visible=true){
     document.getElementById('menu').style.visibility = visible?'visible':'hidden';
@@ -219,13 +223,13 @@ class FPSGameApp{
     this.SetAnim('die', this.assets['dieAnim']);
 
     this.assets['ak47'].scene.animations = this.assets['ak47'].animations;
-    
+
     //Set ammo box textures and other props
     this.assets['ammobox'].scale.set(0.01, 0.01, 0.01);
     this.assets['ammobox'].traverse(child =>{
       child.castShadow = true;
       child.receiveShadow = true;
-      
+
       child.material = new THREE.MeshStandardMaterial({
         map: this.assets['ammoboxTexD'],
         aoMap: this.assets['ammoboxTexAO'],
@@ -235,7 +239,7 @@ class FPSGameApp{
         roughnessMap: this.assets['ammoboxTexR'],
         color: new THREE.Color(0.4, 0.4, 0.4)
       });
-      
+
     });
 
     this.assets['ammoboxShape'] = createConvexHullShape(this.assets['ammobox']);
@@ -244,7 +248,7 @@ class FPSGameApp{
     this.ShowMenu();
   }
 
-  EntitySetup(){
+  EntitySetup(ammo,enemies){
     this.entityManager = new EntityManager();
 
     const levelEntity = new Entity();
@@ -265,42 +269,35 @@ class FPSGameApp{
     playerEntity.AddComponent(new PlayerControls(this.camera, this.scene));
     playerEntity.AddComponent(new Weapon(this.camera, this.assets['ak47'].scene, this.assets['muzzleFlash'], this.physicsWorld, this.assets['ak47Shot'], this.listener ));
     playerEntity.AddComponent(new PlayerHealth());
-    playerEntity.SetPosition(new THREE.Vector3(2.14, 1.48, -1.36));
+    const startingPosition = new THREE.Vector3(-45, 1, 0);
+    playerEntity.AddComponent(new PlayerRespawn(startingPosition));
+    playerEntity.SetPosition(startingPosition);
     playerEntity.SetRotation(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI * 0.5));
     this.entityManager.Add(playerEntity);
 
-    const npcLocations = [
-      [10.8, 0.0, 22.0],
-    ];
-
-    npcLocations.forEach((v,i)=>{
+    for (let i=0; i<enemies; i++) {
       const npcEntity = new Entity();
-      npcEntity.SetPosition(new THREE.Vector3(v[0], v[1], v[2]));
+      npcEntity.SetPosition(new THREE.Vector3(Math.random()*100-50, 0, Math.random()*100 - 50));
       npcEntity.SetName(`Mutant${i}`);
       npcEntity.AddComponent(new NpcCharacterController(SkeletonUtils.clone(this.assets['mutant']), this.mutantAnims, this.scene, this.physicsWorld));
       npcEntity.AddComponent(new AttackTrigger(this.physicsWorld));
       npcEntity.AddComponent(new CharacterCollision(this.physicsWorld));
-      npcEntity.AddComponent(new DirectionDebug(this.scene));
+      //npcEntity.AddComponent(new DirectionDebug(this.scene));
       this.entityManager.Add(npcEntity);
-    });
+    };
 
     const uimanagerEntity = new Entity();
     uimanagerEntity.SetName("UIManager");
     uimanagerEntity.AddComponent(new UIManager());
     this.entityManager.Add(uimanagerEntity);
 
-    const ammoLocations = [
-       [14.37, 0.0, 10.45],
-       [32.77, 0.0, 33.84],
-    ];
-
-    ammoLocations.forEach((loc, i) => {
+    for (let i=0; i<ammo; i++) {
       const box = new Entity();
       box.SetName(`AmmoBox${i}`);
       box.AddComponent(new AmmoBox(this.scene, this.assets['ammobox'].clone(), this.assets['ammoboxShape'], this.physicsWorld));
-      box.SetPosition(new THREE.Vector3(loc[0], loc[1], loc[2]));
+      box.SetPosition(new THREE.Vector3(Math.random()*100-50, 0, Math.random()*100 - 50));
       this.entityManager.Add(box);
-    });
+    };
 
     this.entityManager.EndSetup();
 
@@ -308,19 +305,26 @@ class FPSGameApp{
     this.animFrameId = window.requestAnimationFrame(this.OnAnimationFrameHandler);
   }
 
-  StartGame = ()=>{
+  StartGame = (difficulty)=>{
     window.cancelAnimationFrame(this.animFrameId);
     Input.ClearEventListners();
 
     //Create entities and physics
     this.scene.clear();
     this.SetupPhysics();
-    this.EntitySetup();
+    switch (difficulty) {
+      case 0: this.EntitySetup(5,0); break;
+      case 1: this.EntitySetup(5,1); break;
+      case 2: this.EntitySetup(15,5); break;
+      case 3: this.EntitySetup(30,10); break;
+      case 4: this.EntitySetup(30,30); break;
+      case 5: this.EntitySetup(30,100); break;
+    }
     this.ShowMenu(false);
   }
 
   // resize
-  WindowResizeHanlder = () => { 
+  WindowResizeHanlder = () => {
     const { innerHeight, innerWidth } = window;
     this.renderer.setSize(innerWidth, innerHeight);
     this.camera.aspect = innerWidth / innerHeight;

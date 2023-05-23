@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import Component from '../../Component'
 import {Ammo, AmmoHelper, CollisionFilterGroups} from '../../AmmoLib'
 
@@ -25,10 +26,16 @@ export default class AmmoBox extends Component{
         this.scene.add(this.model);
     }
 
-    Disable(){
-        this.update = false;
-        this.scene.remove(this.model);
-        this.world.removeCollisionObject(this.trigger);
+    Respawn(){
+        let x = Math.random()*100-50;
+        let z = Math.random()*100-50;
+
+        this.parent.SetPosition(new THREE.Vector3(x,0,z));
+        const entityPos = this.parent.position;
+        this.model.position.copy(entityPos);
+        const transform = this.trigger.getWorldTransform();
+        transform.getOrigin().setValue(entityPos.x, entityPos.y, entityPos.z);
+
     }
 
     Update(t){
@@ -50,7 +57,7 @@ export default class AmmoBox extends Component{
 
         if(AmmoHelper.IsTriggerOverlapping(this.trigger, this.playerPhysics.body)){
             this.player.Broadcast({topic: 'AmmoPickup'});
-            this.Disable();
+            this.Respawn();
         }
     }
 

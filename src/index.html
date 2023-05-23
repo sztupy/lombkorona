@@ -33,6 +33,12 @@
         height: 2%;
         background-color: white;
       }
+      #score_container{
+        position: absolute;
+        right: 5%;
+        top: 5%;
+        font-size: 3em;
+      }
       #health_container{
         position: absolute;
         bottom: 8%;
@@ -72,8 +78,10 @@
         font-size: 1.5em;
         border: none;
         cursor: pointer;
-        margin-top: 10%;
         font-weight: 700;
+      }
+      button:hover {
+        color: red;
       }
       #debug{
         position: absolute;
@@ -87,8 +95,12 @@
     <div id="debug"></div>
     <div id="menu">
       <h1>LOMBKORONA</h1>
-      <h2>Le kéne venni a röhögős fejet</h2>
-      <button id="start_game">START</button>
+      <button id="start_game_0">Csak nézelődöm</button>
+      <button id="start_game_1">Egy kis akció</button>
+      <button id="start_game_2">Most azért már folyjon a vér</button>
+      <button id="start_game_3">Kis zombitámadás szimulátor</button>
+      <button id="start_game_4">Nagy zombitámadás szimulátor</button>
+      <button id="start_game_5">Le kéne venni a röhögős fejet</button>
     </div>
     <div id="game_hud">
       <img id="crosshair" src="<%=require('./ui/crosshair.png')%>" />
@@ -96,6 +108,9 @@
         <span id="current_ammo">0</span>
         <span>|</span>
         <span id="max_ammo">0</span>
+      </div>
+      <div id="score_container">
+        <span id="kills">0</span> : <span id="deaths">0</span>
       </div>
       <div id="health_container">
         <div id="health_progress"></div>

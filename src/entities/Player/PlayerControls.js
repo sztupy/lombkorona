@@ -67,9 +67,9 @@ export default class PlayerControls extends Component{
         if (!this.isLocked) {
           return;
         }
-    
+
         const { movementX, movementY } = event
-    
+
         this.angles.y -= movementX * this.mouseSpeed;
         this.angles.x -= movementY * this.mouseSpeed;
 
@@ -109,13 +109,13 @@ export default class PlayerControls extends Component{
             velocity.setY(this.jumpVelocity);
             this.physicsComponent.canJump = false;
         }
-        
+
         this.Deccelerate(t);
         this.Accelarate(direction, t);
 
         const moveVector = this.tempVec.copy(this.speed);
         moveVector.applyQuaternion(this.yaw);
-        
+
         velocity.setX(moveVector.x);
         velocity.setZ(moveVector.z);
 
@@ -129,6 +129,5 @@ export default class PlayerControls extends Component{
             this.camera.position.set(p.x(), p.y() + this.yOffset, p.z());
             this.parent.SetPosition(this.camera.position);
         }
-        
     }
 }
