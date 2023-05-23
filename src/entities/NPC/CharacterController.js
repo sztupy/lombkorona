@@ -137,8 +137,6 @@ export default class CharacterController extends Component{
         this.model.position.z = Math.random() * 100 - 50;
         this.ClearPath();
         this.health = Math.random() * 100;
-
-        this.uimanager.AddKill();
     }
 
     FacePlayer(t, rate = 3.0){
@@ -172,6 +170,11 @@ export default class CharacterController extends Component{
         this.health = Math.max(0, this.health - msg.amount);
 
         if(this.health == 0){
+            const stateName = this.stateMachine.currentState.Name;
+            if (stateName != 'dead') {
+                this.uimanager.AddKill();
+            }
+
             this.stateMachine.SetState('dead');
         }else{
             const stateName = this.stateMachine.currentState.Name;
