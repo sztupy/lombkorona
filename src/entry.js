@@ -20,7 +20,7 @@ import Stats from 'three/examples/jsm/libs/stats.module'
 import {  FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import {  GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import {  OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
-import {  SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils'
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils'
 import NpcCharacterController from './entities/NPC/CharacterController'
 import Input from './Input'
 
@@ -130,8 +130,8 @@ class FPSGameApp{
     this.physicsWorld.getBroadphase().getOverlappingPairCache().setInternalGhostPairCallback(new Ammo.btGhostPairCallback());
 
     //Physics debug drawer
-    //this.debugDrawer = new DebugDrawer(this.scene, this.physicsWorld);
-    //this.debugDrawer.enable();
+    // this.debugDrawer = new DebugDrawer(this.scene, this.physicsWorld);
+    // this.debugDrawer.enable();
   }
 
   SetAnim(name, obj){

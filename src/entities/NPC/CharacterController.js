@@ -63,7 +63,7 @@ export default class CharacterController extends Component{
 
         const scene = this.model;
 
-        scene.scale.setScalar(0.01);
+        scene.scale.setScalar(0.009 + Math.random() * 0.004);
         scene.position.copy(this.parent.position);
 
         this.mixer = new THREE.AnimationMixer( scene );
@@ -149,6 +149,7 @@ export default class CharacterController extends Component{
         this.model.position.z = Math.random() * 100 - 50;
         this.ClearPath();
         this.health = Math.random() * 100;
+        this.stateMachine.SetState('idle');
     }
 
     FacePlayer(t, rate = 3.0){

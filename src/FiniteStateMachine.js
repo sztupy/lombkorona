@@ -12,7 +12,7 @@ class FiniteStateMachine {
 
     SetState(name) {
         const prevState = this.currentState;
-        
+
         if (prevState) {
         if (prevState.Name == name) {
             return;
