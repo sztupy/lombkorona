@@ -1,15 +1,22 @@
+import * as THREE from 'three'
 import Component from "../../Component";
 
 export default class PlayerHealth extends Component{
-    constructor(){
+    constructor(oughSound, listener){
         super();
         this.name = 'PlayerHealth';
         this.health = 100;
+
+        this.oughSoundBuffer = oughSound;
+        this.listener = listener;
     }
 
     TakeHit = e =>{
         this.health = Math.max(0, this.health - 10);
         this.uimanager.SetHealth(this.health);
+
+        this.oughSound.isPlaying && this.oughSound.stop();
+        this.oughSound.play();
     }
 
     Initialize(){
@@ -19,5 +26,10 @@ export default class PlayerHealth extends Component{
 
         this.physicsComponent = this.GetComponent("PlayerPhysics");
         this.physicsBody = this.physicsComponent.body;
+
+        this.oughSound = new THREE.Audio(this.listener);
+        this.oughSound.setBuffer(this.oughSoundBuffer);
+        this.oughSound.setLoop(false);
+
     }
 }

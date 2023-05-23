@@ -7,7 +7,7 @@ import DebugShapes from '../../DebugShapes'
 
 
 export default class CharacterController extends Component{
-    constructor(model, clips, scene, physicsWorld){
+    constructor(model, clips, scene, physicsWorld, hitSound, screamSound, listener){
         super();
         this.name = 'CharacterController';
         this.physicsWorld = physicsWorld;
@@ -21,6 +21,10 @@ export default class CharacterController extends Component{
         this.pathDebug = new DebugShapes(scene);
         this.path = [];
         this.tempRot = new THREE.Quaternion();
+
+        this.hitSoundBuffer = hitSound;
+        this.screamSoundBuffer = screamSound;
+        this.listener = listener;
 
         this.viewAngle = Math.cos(Math.PI / 4.0);
         this.maxViewDistance = 20.0 * 20.0;
@@ -48,6 +52,14 @@ export default class CharacterController extends Component{
         this.player = this.FindEntity("Player");
 
         this.parent.RegisterEventHandler(this.TakeHit, 'hit');
+
+        this.hitSound = new THREE.Audio(this.listener);
+        this.hitSound.setBuffer(this.hitSoundBuffer);
+        this.hitSound.setLoop(false);
+
+        this.screamSound = new THREE.Audio(this.listener);
+        this.screamSound.setBuffer(this.screamSoundBuffer);
+        this.screamSound.setLoop(false);
 
         const scene = this.model;
 
@@ -173,6 +185,8 @@ export default class CharacterController extends Component{
             const stateName = this.stateMachine.currentState.Name;
             if (stateName != 'dead') {
                 this.uimanager.AddKill();
+                this.screamSound.isPlaying && this.screamSound.stop();
+                this.screamSound.play();
             }
 
             this.stateMachine.SetState('dead');
@@ -181,6 +195,9 @@ export default class CharacterController extends Component{
             if(stateName == 'idle' || stateName == 'patrol'){
                 this.stateMachine.SetState('chase');
             }
+
+            this.hitSound.isPlaying && this.hitSound.stop();
+            this.hitSound.play();
         }
     }
 

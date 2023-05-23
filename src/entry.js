@@ -39,7 +39,11 @@ import ak47 from './assets/guns/ak47/ak47.glb'
 import muzzleFlash from './assets/muzzle_flash.glb'
 //Shot sound
 import ak47Shot from './assets/sounds/ak47_shot.wav'
-
+import ak47Reload from './assets/sounds/ak47_reload.wav'
+import ammoPickup from './assets/sounds/ammo_pickup.wav'
+import hurtSound from './assets/sounds/hurt.wav'
+import oughSound from './assets/sounds/ough.wav'
+import screamSound from './assets/sounds/scream.wav'
 //Ammo box
 import ammobox from './assets/ammo/AmmoBox.fbx'
 import ammoboxTexD from './assets/ammo/AmmoBox_D.tga.png'
@@ -191,10 +195,14 @@ class FPSGameApp{
     promises.push(this.AddAsset(runAnim, fbxLoader, "runAnim"));
     promises.push(this.AddAsset(attackAnim, fbxLoader, "attackAnim"));
     promises.push(this.AddAsset(dieAnim, fbxLoader, "dieAnim"));
+    promises.push(this.AddAsset(hurtSound, audioLoader, "hurt"));
+    promises.push(this.AddAsset(oughSound, audioLoader, "ough"));
+    promises.push(this.AddAsset(screamSound, audioLoader, "scream"));
     //AK47
     promises.push(this.AddAsset(ak47, gltfLoader, "ak47"));
     promises.push(this.AddAsset(muzzleFlash, gltfLoader, "muzzleFlash"));
     promises.push(this.AddAsset(ak47Shot, audioLoader, "ak47Shot"));
+    promises.push(this.AddAsset(ak47Reload, audioLoader, "ak47Reload"));
     //Ammo box
     promises.push(this.AddAsset(ammobox, fbxLoader, "ammobox"));
     promises.push(this.AddAsset(ammoboxTexD, texLoader, "ammoboxTexD"));
@@ -202,6 +210,7 @@ class FPSGameApp{
     promises.push(this.AddAsset(ammoboxTexM, texLoader, "ammoboxTexM"));
     promises.push(this.AddAsset(ammoboxTexR, texLoader, "ammoboxTexR"));
     promises.push(this.AddAsset(ammoboxTexAO, texLoader, "ammoboxTexAO"));
+    promises.push(this.AddAsset(ammoPickup, audioLoader, "ammoPickup"));
     //Decal
     promises.push(this.AddAsset(decalColor, texLoader, "decalColor"));
     promises.push(this.AddAsset(decalNormal, texLoader, "decalNormal"));
@@ -267,10 +276,10 @@ class FPSGameApp{
     playerEntity.SetName("Player");
     playerEntity.AddComponent(new PlayerPhysics(this.physicsWorld, Ammo));
     playerEntity.AddComponent(new PlayerControls(this.camera, this.scene));
-    playerEntity.AddComponent(new Weapon(this.camera, this.assets['ak47'].scene, this.assets['muzzleFlash'], this.physicsWorld, this.assets['ak47Shot'], this.listener ));
-    playerEntity.AddComponent(new PlayerHealth());
+    playerEntity.AddComponent(new Weapon(this.camera, this.assets['ak47'].scene, this.assets['muzzleFlash'], this.physicsWorld, this.assets['ak47Shot'], this.assets['ak47Reload'], this.listener ));
+    playerEntity.AddComponent(new PlayerHealth(this.assets['ough'], this.listener));
     const startingPosition = new THREE.Vector3(-45, 1, 0);
-    playerEntity.AddComponent(new PlayerRespawn(startingPosition));
+    playerEntity.AddComponent(new PlayerRespawn(startingPosition, this.assets['scream'], this.listener));
     playerEntity.SetPosition(startingPosition);
     playerEntity.SetRotation(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI * 0.5));
     this.entityManager.Add(playerEntity);
@@ -279,7 +288,7 @@ class FPSGameApp{
       const npcEntity = new Entity();
       npcEntity.SetPosition(new THREE.Vector3(Math.random()*100-50, 0, Math.random()*100 - 50));
       npcEntity.SetName(`Mutant${i}`);
-      npcEntity.AddComponent(new NpcCharacterController(SkeletonUtils.clone(this.assets['mutant']), this.mutantAnims, this.scene, this.physicsWorld));
+      npcEntity.AddComponent(new NpcCharacterController(SkeletonUtils.clone(this.assets['mutant']), this.mutantAnims, this.scene, this.physicsWorld, this.assets['ough'], this.assets['scream'], this.listener));
       npcEntity.AddComponent(new AttackTrigger(this.physicsWorld));
       npcEntity.AddComponent(new CharacterCollision(this.physicsWorld));
       //npcEntity.AddComponent(new DirectionDebug(this.scene));
@@ -294,7 +303,7 @@ class FPSGameApp{
     for (let i=0; i<ammo; i++) {
       const box = new Entity();
       box.SetName(`AmmoBox${i}`);
-      box.AddComponent(new AmmoBox(this.scene, this.assets['ammobox'].clone(), this.assets['ammoboxShape'], this.physicsWorld));
+      box.AddComponent(new AmmoBox(this.scene, this.assets['ammobox'].clone(), this.assets['ammoboxShape'], this.assets['ammoPickup'], this.physicsWorld, this.listener));
       box.SetPosition(new THREE.Vector3(Math.random()*100-50, 0, Math.random()*100 - 50));
       this.entityManager.Add(box);
     };

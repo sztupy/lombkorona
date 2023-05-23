@@ -7,7 +7,7 @@ import WeaponFSM from './WeaponFSM';
 
 
 export default class Weapon extends Component{
-    constructor(camera, model, flash, world, shotSoundBuffer, listner){
+    constructor(camera, model, flash, world, shotSoundBuffer, reloadSoundBuffer, listner){
         super();
         this.name = 'Weapon';
         this.camera = camera;
@@ -20,6 +20,7 @@ export default class Weapon extends Component{
         this.shootTimer = 0.0;
 
         this.shotSoundBuffer = shotSoundBuffer;
+        this.reloadSoundBuffer = reloadSoundBuffer;
         this.audioListner = listner;
 
         this.magAmmo = 30;
@@ -58,6 +59,10 @@ export default class Weapon extends Component{
         this.shotSound = new THREE.Audio(this.audioListner);
         this.shotSound.setBuffer(this.shotSoundBuffer);
         this.shotSound.setLoop(false);
+
+        this.reloadSound = new THREE.Audio(this.audioListner);
+        this.reloadSound.setBuffer(this.reloadSoundBuffer);
+        this.reloadSound.setLoop(false);
     }
 
     AmmoPickup = (e) => {
@@ -132,6 +137,8 @@ export default class Weapon extends Component{
 
         this.reloading = true;
         this.stateMachine.SetState('reload');
+        this.reloadSound.isPlaying && this.reloadSound.stop();
+        this.reloadSound.play();
     }
 
     ReloadDone(){

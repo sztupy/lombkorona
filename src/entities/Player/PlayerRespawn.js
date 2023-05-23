@@ -7,10 +7,13 @@ import DebugShapes from '../../DebugShapes'
 
 
 export default class PlayerRespawn extends Component{
-    constructor(startingPosition){
+    constructor(startingPosition, screamSound, listener){
         super();
         this.name = 'PlayerRespawn';
         this.origin = new Ammo.btVector3(startingPosition.x, startingPosition.y + 10, startingPosition.z);
+
+        this.screamSoundBuffer = screamSound;
+        this.listener = listener;
     }
 
     Initialize(){
@@ -18,6 +21,11 @@ export default class PlayerRespawn extends Component{
         this.physicsBody = this.physicsComponent.body;
         this.healthComponent = this.GetComponent("PlayerHealth");
         this.uimanager = this.FindEntity("UIManager").GetComponent("UIManager");
+
+        this.screamSound = new THREE.Audio(this.listener);
+        this.screamSound.setBuffer(this.screamSoundBuffer);
+        this.screamSound.setLoop(false);
+
     }
 
     Update(t){
@@ -30,6 +38,9 @@ export default class PlayerRespawn extends Component{
             this.uimanager.SetHealth(this.healthComponent.health);
 
             this.uimanager.AddDeath();
+
+            this.screamSound.isPlaying && this.screamSound.stop();
+            this.screamSound.play();
         }
     }
 }

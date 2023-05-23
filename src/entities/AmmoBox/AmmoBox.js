@@ -4,13 +4,15 @@ import {Ammo, AmmoHelper, CollisionFilterGroups} from '../../AmmoLib'
 
 
 export default class AmmoBox extends Component{
-    constructor(scene, model, shape, physicsWorld){
+    constructor(scene, model, shape, sound, physicsWorld, audioListener){
         super();
         this.name = 'AmmoBox';
         this.model = model;
         this.shape = shape;
         this.scene = scene;
         this.world = physicsWorld;
+        this.sound = sound;
+        this.audioListener = audioListener;
 
         this.quat = new Ammo.btQuaternion();
         this.update = true;
@@ -24,6 +26,10 @@ export default class AmmoBox extends Component{
 
         this.world.addCollisionObject(this.trigger, CollisionFilterGroups.SensorTrigger);
         this.scene.add(this.model);
+
+        this.pickupSound = new THREE.Audio(this.audioListener);
+        this.pickupSound.setBuffer(this.sound);
+        this.pickupSound.setLoop(false);
     }
 
     Respawn(){
@@ -56,6 +62,9 @@ export default class AmmoBox extends Component{
         transform.getOrigin().setValue(entityPos.x, entityPos.y, entityPos.z);
 
         if(AmmoHelper.IsTriggerOverlapping(this.trigger, this.playerPhysics.body)){
+            this.pickupSound.isPlaying && this.pickupSound.stop();
+            this.pickupSound.play();
+
             this.player.Broadcast({topic: 'AmmoPickup'});
             this.Respawn();
         }
