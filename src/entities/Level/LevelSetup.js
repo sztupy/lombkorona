@@ -3,12 +3,14 @@ import * as THREE from 'three'
 import {Ammo, createConvexHullShape} from '../../AmmoLib'
 
 export default class LevelSetup extends Component{
-    constructor(mesh, scene, physicsWorld){
+    constructor(mesh, scene, physicsWorld, lights){
         super();
         this.scene = scene;
         this.physicsWorld = physicsWorld;
         this.name = 'LevelSetup';
         this.mesh = mesh;
+
+        this.enableLight = lights;
     }
 
     LoadScene(){
@@ -22,19 +24,24 @@ export default class LevelSetup extends Component{
             }
 
             if(node.isLight){
-                node.intensity = 3;
-                const shadow = node.shadow;
-                const lightCam = shadow.camera;
+                if (this.enableLight) {
+                    node.intensity = 3;
+                    const shadow = node.shadow;
+                    const lightCam = shadow.camera;
 
-                shadow.mapSize.width = 1024 * 3;
-                shadow.mapSize.height = 1024 * 3;
-                shadow.bias = -0.00007;
+                    shadow.mapSize.width = 1024 * 3;
+                    shadow.mapSize.height = 1024 * 3;
+                    shadow.bias = -0.00007;
 
-                const dH = 35, dV = 35;
-                lightCam.left = -dH;
-                lightCam.right = dH;
-                lightCam.top = dV;
-                lightCam.bottom = -dV;
+                    const dH = 35, dV = 35;
+                    lightCam.left = -dH;
+                    lightCam.right = dH;
+                    lightCam.top = dV;
+                    lightCam.bottom = -dV;
+                } else {
+                    node.visible = false;
+                    node.castShadow = false;
+                }
 
                 //const cameraHelper = new THREE.CameraHelper(lightCam);
                 //this.scene.add(cameraHelper);

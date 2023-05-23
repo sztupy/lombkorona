@@ -38,8 +38,14 @@ export default class CharacterCollision extends Component{
             'MutantSpine':{
                 rotation: {x: 0.0, y: 0.0, z: 0.0},
                 position: {x: 0.0, y: 0.25, z: 0.0},
-                radius: 0.25,
+                radius: 0.3,
                 height: 0.5
+            },
+            'MutantHead':{
+                rotation: {x: 0.0, y: 0.0, z: 0.0},
+                position: {x: 0.0, y: 0.15, z: 0.0},
+                radius: 0.15,
+                height: 0
             },
             'MutantLeftUpLeg':{
                 rotation: {x: -0.1, y: 0.0, z: 0.1},
@@ -71,6 +77,10 @@ export default class CharacterCollision extends Component{
     Initialize(){
         this.controller = this.GetComponent('CharacterController');
 
+        this.size = this.controller.size;
+
+        let multiply = this.size / 0.01;
+
         this.controller.model.traverse(child =>{
             if ( !child.isSkinnedMesh  ) {
                 return;
@@ -84,16 +94,17 @@ export default class CharacterCollision extends Component{
 
             collision.bone = this.mesh.skeleton.bones.find(bone => bone.name == key);
 
-            const shape = new Ammo.btCapsuleShape(collision.radius, collision.height);
+            const shape = new Ammo.btCapsuleShape(collision.radius * multiply, collision.height * multiply);
             collision.object = AmmoHelper.CreateTrigger(shape);
             collision.object.parentEntity = this.parent;
+            collision.object.partKey = key;
 
             const localRot = new Ammo.btQuaternion();
             localRot.setEulerZYX(collision.rotation.z,collision.rotation.y, collision.rotation.x);
             collision.localTransform = new Ammo.btTransform();
             collision.localTransform.setIdentity();
             collision.localTransform.setRotation(localRot);
-            collision.localTransform.getOrigin().setValue(collision.position.x, collision.position.y, collision.position.z);
+            collision.localTransform.getOrigin().setValue(collision.position.x * multiply, collision.position.y * multiply, collision.position.z * multiply);
 
             this.world.addCollisionObject(collision.object);
         });
@@ -103,7 +114,7 @@ export default class CharacterCollision extends Component{
     Update(t){
         Object.keys(this.collisions).forEach(key=>{
             const collision = this.collisions[key];
-            
+
             const transform = collision.object.getWorldTransform();
 
             collision.bone.getWorldPosition(this.bonePos);

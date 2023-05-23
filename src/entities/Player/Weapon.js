@@ -162,7 +162,12 @@ export default class Weapon extends Component{
             const rigidBody = Ammo.castObject( this.hitResult.collisionObject, Ammo.btRigidBody );
             const entity = ghostBody.parentEntity || rigidBody.parentEntity;
 
-            entity && entity.Broadcast({'topic': 'hit', from: this.parent, amount: this.damage, hitResult: this.hitResult});
+            let damage = this.damage;
+            if (ghostBody && ghostBody.partKey == 'MutantHead') {
+                damage = damage * 4;
+            }
+
+            entity && entity.Broadcast({'topic': 'hit', from: this.parent, amount: damage, hitResult: this.hitResult});
         }
     }
 

@@ -130,8 +130,10 @@ class FPSGameApp{
     this.physicsWorld.getBroadphase().getOverlappingPairCache().setInternalGhostPairCallback(new Ammo.btGhostPairCallback());
 
     //Physics debug drawer
-    // this.debugDrawer = new DebugDrawer(this.scene, this.physicsWorld);
-    // this.debugDrawer.enable();
+    if (this.enableDebug) {
+      this.debugDrawer = new DebugDrawer(this.scene, this.physicsWorld);
+      this.debugDrawer.enable();
+    }
   }
 
   SetAnim(name, obj){
@@ -262,7 +264,7 @@ class FPSGameApp{
 
     const levelEntity = new Entity();
     levelEntity.SetName('Level');
-    levelEntity.AddComponent(new LevelSetup(this.assets['level'], this.scene, this.physicsWorld));
+    levelEntity.AddComponent(new LevelSetup(this.assets['level'], this.scene, this.physicsWorld, document.getElementById("shadows").checked));
     levelEntity.AddComponent(new Navmesh(this.scene, this.assets['navmesh']));
     levelEntity.AddComponent(new LevelBulletDecals(this.scene, this.assets['decalColor'], this.assets['decalNormal'], this.assets['decalAlpha']));
     this.entityManager.Add(levelEntity);
@@ -318,6 +320,8 @@ class FPSGameApp{
     window.cancelAnimationFrame(this.animFrameId);
     Input.ClearEventListners();
 
+    this.enableDebug = document.getElementById("debugopt").checked;
+    console.log(this.enableDebug);
     //Create entities and physics
     this.scene.clear();
     this.SetupPhysics();
@@ -360,7 +364,10 @@ class FPSGameApp{
 
   Step(elapsedTime){
     this.physicsWorld.stepSimulation( elapsedTime, 10 );
-    //this.debugDrawer.update();
+
+    if (this.enableDebug) {
+      this.debugDrawer.update();
+    }
 
     this.entityManager.Update(elapsedTime);
 
