@@ -277,7 +277,7 @@ class FPSGameApp{
     playerEntity.AddComponent(new PlayerPhysics(this.physicsWorld, Ammo));
     playerEntity.AddComponent(new PlayerControls(this.camera, this.scene));
     playerEntity.AddComponent(new Weapon(this.camera, this.assets['ak47'].scene, this.assets['muzzleFlash'], this.physicsWorld, this.assets['ak47Shot'], this.assets['ak47Reload'], this.listener ));
-    playerEntity.AddComponent(new PlayerHealth(this.assets['ough'], this.listener));
+    playerEntity.AddComponent(new PlayerHealth(this.assets['hurt'], this.listener));
     const startingPosition = new THREE.Vector3(-45, 1, 0);
     playerEntity.AddComponent(new PlayerRespawn(startingPosition, this.assets['scream'], this.listener));
     playerEntity.SetPosition(startingPosition);
