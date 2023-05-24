@@ -33,6 +33,8 @@ export default class PlayerControls extends Component{
         this.moveDir = new THREE.Vector3();
         this.xAxis = new THREE.Vector3(1.0, 0.0, 0.0);
         this.yAxis = new THREE.Vector3(0.0, 1.0, 0.0);
+
+        this.previousTouch = null;
     }
 
     Initialize(){
@@ -44,6 +46,8 @@ export default class PlayerControls extends Component{
         this.UpdateRotation();
 
         Input.AddMouseMoveListner(this.OnMouseMove);
+        Input.AddTouchMoveListner(this.OnTouchMove);
+        Input.AddTouchDownListner(this.OnTouchDown);
 
         document.addEventListener('pointerlockchange', this.OnPointerlockChange)
 
@@ -76,6 +80,29 @@ export default class PlayerControls extends Component{
         this.angles.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.angles.x));
 
         this.UpdateRotation();
+    }
+
+    OnTouchMove = (e) => {
+        const touch = e.touches[0];
+
+        if (this.previousTouch) {
+            e.movementX = touch.pageX - this.previousTouch.pageX;
+            e.movementY = touch.pageY - this.previousTouch.pageY;
+
+            const { movementX, movementY } = e;
+
+            this.angles.y -= movementX * this.mouseSpeed * 3;
+            this.angles.x -= movementY * this.mouseSpeed * 3;
+
+            this.angles.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.angles.x));
+
+            this.UpdateRotation();
+        };
+        this.previousTouch = touch;
+    }
+
+    OnTouchDown = (e) => {
+        this.previousTouch = null;
     }
 
     UpdateRotation(){

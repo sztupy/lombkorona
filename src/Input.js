@@ -26,12 +26,20 @@ class Input{
         this._addEventListner(document, 'mousemove', callback);
     }
 
+    AddTouchMoveListner(callback){
+        this._addEventListner(document, 'touchmove', callback);
+    }
+
     AddClickListner(callback){
         this._addEventListner(document.body, 'click', callback);
     }
 
     AddMouseDownListner(callback){
         this._addEventListner(document.body, 'mousedown', callback);
+    }
+
+    AddTouchDownListner(callback){
+        this._addEventListner(document, 'touchstart', callback);
     }
 
     AddMouseUpListner(callback){

@@ -104,6 +104,15 @@ export default class Weapon extends Component{
     }
 
     SetupInput(){
+        Input.AddTouchDownListner( e => {
+            if(e.touches.length < 2 || this.reloading){
+                return;
+            }
+
+            this.shoot = true;
+            this.shootTimer = 0.0;
+        });
+
         Input.AddMouseDownListner( e => {
             if(e.button != 0 || this.reloading){
                 return;
