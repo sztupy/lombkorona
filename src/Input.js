@@ -42,7 +42,7 @@ class Input{
         this._addEventListner(document, 'touchstart', callback);
     }
 
-    AddTouchEndListner(callback){
+    AddTouchUpListner(callback){
         this._addEventListner(document, 'touchend', callback);
     }
 
