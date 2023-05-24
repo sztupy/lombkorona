@@ -16,6 +16,7 @@ import LevelSetup from './entities/Level/LevelSetup'
 import PlayerControls from './entities/Player/PlayerControls'
 import PlayerPhysics from './entities/Player/PlayerPhysics'
 import PlayerRespawn from './entities/Player/PlayerRespawn'
+import CheatCodes from './entities/Player/CheatCodes'
 import Stats from 'three/examples/jsm/libs/stats.module'
 import {  FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import {  GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -282,6 +283,7 @@ class FPSGameApp{
     playerEntity.AddComponent(new PlayerHealth(this.assets['hurt'], this.listener));
     const startingPosition = new THREE.Vector3(-45, 1, 0);
     playerEntity.AddComponent(new PlayerRespawn(startingPosition, this.assets['scream'], this.listener));
+    playerEntity.AddComponent(new CheatCodes());
     playerEntity.SetPosition(startingPosition);
     playerEntity.SetRotation(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI * 0.5));
     this.entityManager.Add(playerEntity);

@@ -12,8 +12,10 @@ export default class PlayerHealth extends Component{
     }
 
     TakeHit = e =>{
-        this.health = Math.max(0, this.health - 10);
-        this.uimanager.SetHealth(this.health);
+        if (!this.cheatCodes.godMode) {
+            this.health = Math.max(0, this.health - 10);
+            this.uimanager.SetHealth(this.health);
+        }
 
         this.oughSound.isPlaying && this.oughSound.stop();
         this.oughSound.play();
@@ -21,6 +23,7 @@ export default class PlayerHealth extends Component{
 
     Initialize(){
         this.uimanager = this.FindEntity("UIManager").GetComponent("UIManager");
+        this.cheatCodes = this.GetComponent('CheatCodes');
         this.parent.RegisterEventHandler(this.TakeHit, "hit");
         this.uimanager.SetHealth(this.health);
 
