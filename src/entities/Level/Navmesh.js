@@ -17,7 +17,7 @@ export default class Navmesh extends Component{
         this.pathfinding = new Pathfinding();
 
         this.mesh.traverse( ( node ) => {
-            if(node.isMesh){ 
+            if(node.isMesh){
                 this.pathfinding.setZoneData(this.zone, Pathfinding.createZone(node.geometry));
             }
         });
@@ -30,6 +30,14 @@ export default class Navmesh extends Component{
 
     FindPath(a, b){
         const groupID = this.pathfinding.getGroup(this.zone, a);
-        return this.pathfinding.findPath(a, b, this.zone, groupID);
+        const path = this.pathfinding.findPath(a, b, this.zone, groupID);
+
+        if (path)
+            return path;
+
+        const closestStartNode = this.pathfinding.getClosestNode(a, this.zone, groupID, false);
+        const closestEndNode = this.pathfinding.getClosestNode(b, this.zone, groupID, false);
+
+        return this.pathfinding.findPath(closestStartNode.centroid, closestEndNode.centroid, this.zone, groupID);
     }
 }

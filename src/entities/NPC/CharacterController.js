@@ -134,6 +134,7 @@ export default class CharacterController extends Component{
     NavigateToPlayer(){
         this.tempVec.copy(this.player.Position);
         this.tempVec.y = 0.5;
+
         this.path = this.navmesh.FindPath(this.model.position, this.tempVec);
 
         /*

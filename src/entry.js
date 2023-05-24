@@ -321,7 +321,6 @@ class FPSGameApp{
     Input.ClearEventListners();
 
     this.enableDebug = document.getElementById("debugopt").checked;
-    console.log(this.enableDebug);
     //Create entities and physics
     this.scene.clear();
     this.SetupPhysics();

@@ -113,7 +113,6 @@ class ChaseState extends State{
     get Animation(){return this.parent.proxy.animations['run']; }
 
     RunToPlayer(prevState){
-        console.log("calc");
         this.parent.proxy.canMove = true;
         const action = this.Animation.action;
         this.updateTimer = 0.0;
