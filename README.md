@@ -2,7 +2,27 @@
 
 FPS based on https://github.com/mohsenheydari/three-fps with the model of the area provided by https://github.com/szabokrissz96/lombkorona
 
-### Install
+## Usage
+
+Select a difficulty on the first screen.
+
+Keyboard & mouse:
+* `W`, `A`, `S`, `D`: move
+* Mouse: look
+* `R`: reload
+* `Space`: jump
+
+Touchscreen:
+* First touch: look
+* Second and further touches:
+ * Top left section: fire
+ * Bottom left section: jump
+ * Top right section: move forward
+ * Bottom right section: move backward
+
+Enemies respawn after killed. There are no end goals, and no win or lose conditions.
+
+## Install
 Simply clone and run `npm install`:
 
 ```bash

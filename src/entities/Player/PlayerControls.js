@@ -89,19 +89,19 @@ export default class PlayerControls extends Component{
     OnTouchMove = (e) => {
         const touch = e.touches[0];
 
-        // if (this.previousTouch) {
-        //     e.movementX = touch.clientX - this.previousTouch.clientX;
-        //     e.movementY = touch.clientY - this.previousTouch.clientY;
+        if (this.previousTouch) {
+            e.movementX = touch.clientX - this.previousTouch.clientX;
+            e.movementY = touch.clientY - this.previousTouch.clientY;
 
-        //     const { movementX, movementY } = e;
+            const { movementX, movementY } = e;
 
-        //     this.angles.y -= movementX * this.mouseSpeed * 3;
-        //     this.angles.x -= movementY * this.mouseSpeed * 3;
+            this.angles.y -= movementX * this.mouseSpeed * 3;
+            this.angles.x -= movementY * this.mouseSpeed * 3;
 
-        //     this.angles.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.angles.x));
+            this.angles.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.angles.x));
 
-        //     this.UpdateRotation();
-        // };
+            this.UpdateRotation();
+        };
         this.previousTouch = touch;
     }
 
