@@ -104,20 +104,28 @@ export default class Weapon extends Component{
     }
 
     SetupInput(){
-        Input.AddTouchDownListner( e => {
-            if(e.touches.length < 2 || this.reloading){
-                return;
+        const touchHandler = (e) => {
+            this.previousTouch = null;
+
+            let shootTouch = false;
+            if (e.touches.length > 1) {
+                for (let i = 1; i<e.touches.length; i++) {
+                    if (e.touches[i].clientX < window.innerWidth / 2 && e.touches[i].clientY < window.innerHeight / 2) {
+                        shootTouch = true;
+                    }
+                }
             }
 
-            this.shoot = true;
-            this.shootTimer = 0.0;
-        });
-
-        Input.AddTouchUpListner( e => {
-            if (e.touches.length < 2) {
+            if (shootTouch) {
+                this.shoot = true;
+                this.shootTimer = 0.0;
+            } else {
                 this.shoot = false;
             }
-        })
+        }
+
+        Input.AddTouchDownListner(touchHandler);
+        Input.AddTouchUpListner(touchHandler);
 
         Input.AddMouseDownListner( e => {
             if(e.button != 0 || this.reloading){

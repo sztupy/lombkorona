@@ -35,6 +35,9 @@ export default class PlayerControls extends Component{
         this.yAxis = new THREE.Vector3(0.0, 1.0, 0.0);
 
         this.previousTouch = null;
+        this.touchForward = 0;
+        this.touchBackward = 0;
+        this.touchJump = 0;
     }
 
     Initialize(){
@@ -48,6 +51,7 @@ export default class PlayerControls extends Component{
         Input.AddMouseMoveListner(this.OnMouseMove);
         Input.AddTouchMoveListner(this.OnTouchMove);
         Input.AddTouchDownListner(this.OnTouchDown);
+        Input.AddTouchUpListner(this.OnTouchDown); // same logic as touchstart
 
         document.addEventListener('pointerlockchange', this.OnPointerlockChange)
 
@@ -85,24 +89,43 @@ export default class PlayerControls extends Component{
     OnTouchMove = (e) => {
         const touch = e.touches[0];
 
-        if (this.previousTouch) {
-            e.movementX = touch.pageX - this.previousTouch.pageX;
-            e.movementY = touch.pageY - this.previousTouch.pageY;
+        // if (this.previousTouch) {
+        //     e.movementX = touch.clientX - this.previousTouch.clientX;
+        //     e.movementY = touch.clientY - this.previousTouch.clientY;
 
-            const { movementX, movementY } = e;
+        //     const { movementX, movementY } = e;
 
-            this.angles.y -= movementX * this.mouseSpeed * 3;
-            this.angles.x -= movementY * this.mouseSpeed * 3;
+        //     this.angles.y -= movementX * this.mouseSpeed * 3;
+        //     this.angles.x -= movementY * this.mouseSpeed * 3;
 
-            this.angles.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.angles.x));
+        //     this.angles.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.angles.x));
 
-            this.UpdateRotation();
-        };
+        //     this.UpdateRotation();
+        // };
         this.previousTouch = touch;
     }
 
     OnTouchDown = (e) => {
         this.previousTouch = null;
+
+        this.touchForward = 0;
+        this.touchBackward = 0;
+        this.touchJump = 0;
+        if (e.touches.length > 1) {
+            for (let i = 1; i<e.touches.length; i++) {
+                if (e.touches[i].clientX > window.innerWidth / 2 && e.touches[i].clientY < window.innerHeight / 2) {
+                    this.touchForward = 1;
+                }
+
+                if (e.touches[i].clientX > window.innerWidth / 2 && e.touches[i].clientY > window.innerHeight / 2) {
+                    this.touchBackward = 1;
+                }
+
+                if (e.touches[i].clientX < window.innerWidth / 2 && e.touches[i].clientY > window.innerHeight / 2) {
+                    this.touchJump = 1;
+                }
+            }
+        }
     }
 
     UpdateRotation(){
@@ -126,13 +149,13 @@ export default class PlayerControls extends Component{
     }
 
     Update(t){
-        const forwardFactor = Input.GetKeyDown("KeyS") - Input.GetKeyDown("KeyW");
+        const forwardFactor = Input.GetKeyDown("KeyS") - Input.GetKeyDown("KeyW") + this.touchBackward - this.touchForward;
         const rightFactor = Input.GetKeyDown("KeyD") - Input.GetKeyDown("KeyA");
         const direction = this.moveDir.set(rightFactor, 0.0, forwardFactor).normalize();
 
         const velocity = this.physicsBody.getLinearVelocity();
 
-        if(Input.GetKeyDown('Space') && this.physicsComponent.canJump){
+        if((Input.GetKeyDown('Space') || this.touchJump) && this.physicsComponent.canJump){
             velocity.setY(this.jumpVelocity);
             this.physicsComponent.canJump = false;
         }
