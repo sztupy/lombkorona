@@ -42,6 +42,10 @@ class Input{
         this._addEventListner(document, 'touchstart', callback);
     }
 
+    AddTouchEndListner(callback){
+        this._addEventListner(document, 'touchend', callback);
+    }
+
     AddMouseUpListner(callback){
         this._addEventListner(document.body, 'mouseup', callback);
     }

@@ -176,7 +176,7 @@ class FPSGameApp{
 
 
   ShowMenu(visible=true){
-    document.getElementById('menu').style.visibility = visible?'visible':'hidden';
+    document.getElementById('menu').style.display = visible?'flex':'none';
   }
 
   async LoadAssets(){

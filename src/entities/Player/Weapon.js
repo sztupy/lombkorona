@@ -113,6 +113,12 @@ export default class Weapon extends Component{
             this.shootTimer = 0.0;
         });
 
+        Input.AddTouchUpListner( e => {
+            if (e.touches.length < 2) {
+                this.shoot = false;
+            }
+        })
+
         Input.AddMouseDownListner( e => {
             if(e.button != 0 || this.reloading){
                 return;
