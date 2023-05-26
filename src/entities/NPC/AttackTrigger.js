@@ -19,7 +19,7 @@ export default class AttackTrigger extends Component{
 
     SetupTrigger(){
         const shape = new Ammo.btSphereShape(0.4);
-        this.ghostObj = AmmoHelper.CreateTrigger(shape);
+        this.ghostObj = AmmoHelper.CreateTrigger(shape, null, null, true);
 
         this.physicsWorld.addCollisionObject(this.ghostObj, CollisionFilterGroups.SensorTrigger);
     }
@@ -32,7 +32,7 @@ export default class AttackTrigger extends Component{
     PhysicsUpdate(world, t){
         this.overlapping = AmmoHelper.IsTriggerOverlapping(this.ghostObj, this.playerPhysics.body);
     }
-    
+
     Update(t){
         const entityPos = this.parent.position;
         const entityRot = this.parent.rotation;

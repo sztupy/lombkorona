@@ -22,7 +22,7 @@ export default class AmmoBox extends Component{
         this.player = this.FindEntity('Player');
         this.playerPhysics = this.player.GetComponent('PlayerPhysics');
 
-        this.trigger = AmmoHelper.CreateTrigger(this.shape);
+        this.trigger = AmmoHelper.CreateTrigger(this.shape, null, null, true);
 
         this.world.addCollisionObject(this.trigger, CollisionFilterGroups.SensorTrigger);
         this.scene.add(this.model);

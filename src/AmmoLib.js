@@ -8,7 +8,7 @@ let rayDest = null;
 let closestRayResultCallback = null;
 
 const CollisionFlags = { CF_NO_CONTACT_RESPONSE: 4 }
-const CollisionFilterGroups = { 
+const CollisionFilterGroups = {
   DefaultFilter: 1,
   StaticFilter: 2,
   KinematicFilter: 4,
@@ -30,7 +30,7 @@ function createConvexHullShape(object) {
     }
     return shape;
 }
-  
+
 function createConvexGeom (object) {
   // Compute the 3D convex hull.
   let hull = new ConvexHull().setFromObject(object);
@@ -65,17 +65,19 @@ class AmmoHelper{
     });
   }
 
-  static CreateTrigger(shape, position, rotation){
+  static CreateTrigger(shape, position, rotation, isGhost){
     const transform = new Ammo.btTransform();
     transform.setIdentity();
     position && transform.setOrigin(new Ammo.btVector3(position.x, position.y, position.z));
     rotation && transform.setRotation(new Ammo.btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w));
-  
-    const ghostObj = new Ammo.btPairCachingGhostObject();
+
+    const ghostObj = isGhost ? new Ammo.btPairCachingGhostObject() : new Ammo.btRigidBody();
     ghostObj.setCollisionShape(shape);
-    ghostObj.setCollisionFlags(CollisionFlags.CF_NO_CONTACT_RESPONSE);
+    if (isGhost) {
+      ghostObj.setCollisionFlags(CollisionFlags.CF_NO_CONTACT_RESPONSE);
+    }
     ghostObj.setWorldTransform(transform);
-  
+
     return ghostObj;
   }
 
@@ -87,7 +89,7 @@ class AmmoHelper{
             return true;
         }
     }
-  
+
     return false;
   }
 
@@ -104,7 +106,7 @@ class AmmoHelper{
     rayCallBack.set_m_collisionObject( null );
 
     rayCallBack.m_collisionFilterMask = collisionFilterMask;
-  
+
     // Set closestRayResultCallback origin and dest
     rayOrigin.setValue( origin.x, origin.y, origin.z );
     rayDest.setValue( dest.x, dest.y, dest.z );
@@ -113,7 +115,7 @@ class AmmoHelper{
 
     // Perform ray test
     world.rayTest( rayOrigin, rayDest, closestRayResultCallback );
-  
+
     if ( closestRayResultCallback.hasHit() ) {
 
         if(result.intersectionPoint){

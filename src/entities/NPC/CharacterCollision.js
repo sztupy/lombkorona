@@ -106,7 +106,7 @@ export default class CharacterCollision extends Component{
             collision.localTransform.setRotation(localRot);
             collision.localTransform.getOrigin().setValue(collision.position.x * multiply, collision.position.y * multiply, collision.position.z * multiply);
 
-            this.world.addCollisionObject(collision.object);
+            this.world.addRigidBody(collision.object);
         });
 
     }
